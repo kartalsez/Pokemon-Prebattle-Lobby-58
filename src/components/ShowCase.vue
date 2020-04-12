@@ -51,6 +51,15 @@
             this.getPokemons(this.currentPage, this.limit);
         },
         methods: {
+            showToast(message, title, variant, append = false) {
+                this.$bvToast.toast(message, {
+                    title: title,
+                    toaster: 'b-toaster-top-center',
+                    solid: true,
+                    variant: variant,
+                    appendToast: append
+                })
+            },
             getPokemons(pageNumber, limit) {
                 axios.get(`https://pokeapi.co/api/v2/pokemon?offset=${pageNumber}&limit=${limit}`).then(response => {
                     this.pokemonList = response.data.results;
@@ -69,8 +78,26 @@
                 this.getPokemonDetail(pokemonUrl);
             },
             onClickOK() {
+                if (this.selectedPokemonList.length === 3) {
+                    this.showToast('You could select maximum of three!', 'Maximum Warning', 'warning');
+                    return;
+                }
+
+                if (this.selectedPokemonList.find(item => item.id === this.selectedPokemon.id)) {
+                    this.showToast("You couldn't select same Pokémon!", 'Same Pokémon Warning', 'warning');
+                    return;
+                }
+
+                if (this.selectedPokemon.weight > 500) {
+                    this.showToast("The total weight of the selected Pokémon shouldn’t be more than 500!",
+                        'Pokémon Weight Limit Warning!', 'warning');
+                    return;
+                }
+
                 this.selectedPokemonList.push(this.selectedPokemon);
                 this.$emit('onSelectedPokemonList', this.selectedPokemonList)
+                this.showToast("The selected Pokémon added.",
+                    'Pokémon Added', 'success');
             }
         }
     }
