@@ -1,7 +1,8 @@
 <template>
     <div class="pokemon-basic-info">
-        <main>
-            <img v-bind:src="selectedPokemon.sprites ? selectedPokemon.sprites.front_default : ''">
+        <div v-if="!isLoaded" class="text-center"><b-spinner variant="primary" label="Spinning"></b-spinner></div>
+        <main v-if="isLoaded">
+            <img v-bind:src="selectedPokemon && selectedPokemon.sprites ? selectedPokemon.sprites.front_default : ''">
             <nav>
                 <p><b>Name: </b><span>{{ selectedPokemon.name }}</span> </p>
                 <p><b>Weight: </b><span>{{ selectedPokemon.weight }}</span> </p>
@@ -21,7 +22,8 @@
 export default {
     name: 'PokemonBasicInfo',
     props: {
-        selectedPokemon: Object
+        selectedPokemon: Object,
+        isLoaded: Boolean
     }
 }
 </script>

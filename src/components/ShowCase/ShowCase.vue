@@ -13,7 +13,7 @@
         </footer>
 
         <b-modal id="modal-pokemon-info" title="Pokemon Basic Info" @ok="onClickOK()" :ok-title="'Add Pokémon'">
-            <PokemonBasicInfo  v-if="selectedPokemon" :selectedPokemon="selectedPokemon"></PokemonBasicInfo>
+            <PokemonBasicInfo  :isLoaded="isLoaded" :selectedPokemon="selectedPokemon"></PokemonBasicInfo>
         </b-modal>
 
     </div>
@@ -35,7 +35,8 @@
                 rows: 100,
                 limit: 10,
                 selectedPokemon: {},
-                selectedPokemonList: []
+                selectedPokemonList: [],
+                isLoaded: false
             }
         },
         mounted() {
@@ -58,8 +59,10 @@
             },
             getPokemonDetail(pokemonUrl) {
                 this.selectedPokemon = {};
+                this.isLoaded = false;
                 axios.get(pokemonUrl).then(response => {
                     this.selectedPokemon = response.data;
+                    this.isLoaded = true;
                 })
             },
             isTotalWeightExceeded() {
