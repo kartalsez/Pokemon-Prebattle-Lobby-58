@@ -1,29 +1,19 @@
 <template>
     <div class="showcase">
-        <header>
-            <h2>Showcase</h2>
-        </header>
-        <section>
-            <button v-for="pokemon_ in pokemonList" :key="pokemon_.url" @click="onClickPokemon(pokemon_.url)" v-b-modal.modal-pokemon-info> {{ pokemon_.name }}</button>
-        </section>
+        <main>
+            <header>
+                <h2>Showcase</h2>
+            </header>
+            <section>
+                <button v-for="pokemon_ in pokemonList" :key="pokemon_.url" @click="onClickPokemon(pokemon_.url)" v-b-modal.modal-pokemon-info> {{ pokemon_.name }}</button>
+            </section>
+        </main>
         <footer>
             <b-pagination @change="onChangePagination($event)" v-model="currentPage" :per-page="1" :total-rows="rows" align="center" size="sm"></b-pagination>
         </footer>
 
-        <b-modal id="modal-pokemon-info" title="Pokemon Basic Info" @ok="onClickOK()">
-            <main>
-                <img v-bind:src="selectedPokemon && selectedPokemon.sprites ? selectedPokemon.sprites.front_default : ''">
-                <nav>
-                    <p><b>Name: </b><span>{{ selectedPokemon.name }}</span> </p>
-                    <p><b>Weight: </b><span>{{ selectedPokemon.weight }}</span> </p>
-                    <b>Abilities: </b>
-                    <ul class="abilities">
-                        <li v-for="ability_ in selectedPokemon.abilities" :key="ability_.ability.url">
-                            {{ ability_.ability.name }}
-                        </li>
-                    </ul>
-                </nav>
-            </main>
+        <b-modal id="modal-pokemon-info" title="Pokemon Basic Info" @ok="onClickOK()" :ok-title="'Add Pokémon'">
+            <PokemonBasicInfo  v-if="selectedPokemon" :selectedPokemon="selectedPokemon"></PokemonBasicInfo>
         </b-modal>
 
     </div>
@@ -31,11 +21,12 @@
 
 <script>
     import axios from 'axios';
+    import PokemonBasicInfo from "./PokemonBasicInfo";
 
     export default {
         name: 'ShowCase',
-        props: {
-            msg: String,
+        components: {
+            PokemonBasicInfo
         },
         data() {
             return {
@@ -71,6 +62,19 @@
                     this.selectedPokemon = response.data;
                 })
             },
+            isTotalWeightExceeded() {
+                if (this.selectedPokemon.weight <= 500) {
+                    return this.computeTotatlWeight(this.selectedPokemonList) + this.selectedPokemon.weight > 500;
+                } else {
+                    return true;
+                }
+            },
+            computeTotatlWeight(list) {
+                const reducer = (accumulator, item) => {
+                    return accumulator + item.weight;
+                };
+                return list.reduce(reducer, 0);
+            },
             onChangePagination(pageNumber) {
                 this.getPokemons(pageNumber, this.limit);
             },
@@ -88,16 +92,17 @@
                     return;
                 }
 
-                if (this.selectedPokemon.weight > 500) {
-                    this.showToast("The total weight of the selected Pokémon shouldn’t be more than 500!",
-                        'Pokémon Weight Limit Warning!', 'warning');
+                if (this.isTotalWeightExceeded()) {
+                    this.showToast("The total weight of the selected Pokémon shouldn’t be more than 500!", 'Pokémon Weight Limit Warning!', 'warning');
                     return;
                 }
 
                 this.selectedPokemonList.push(this.selectedPokemon);
-                this.$emit('onSelectedPokemonList', this.selectedPokemonList)
-                this.showToast("The selected Pokémon added.",
-                    'Pokémon Added', 'success');
+
+                this.$emit('onAddedPokemon',
+                    {selectedPokemonList: this.selectedPokemonList, totalWeight: this.computeTotatlWeight(this.selectedPokemonList)});
+
+                this.showToast("The selected Pokémon added.", 'Pokémon Added', 'success');
             }
         }
     }
@@ -111,14 +116,22 @@
         min-width: 25%;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         padding: 4px 16px 4px;
 
-        header, h2, section, footer, main {
+        main, header, h2, section, footer, main {
             width: 100%
         }
 
         h2 {
-            margin: 0px;
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
         }
 
         section {
@@ -140,28 +153,8 @@
         }
 
         footer {
-            margin-top: 48px;
             display: flex;
             justify-content: center;
-        }
-    }
-    .modal-body {
-        main {
-            display: flex !important;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-
-            nav {
-                display: flex !important;
-                flex-direction: column;
-
-                .abilities {
-                    display: flex;
-                    flex-direction: column;
-
-                }
-            }
         }
     }
 </style>

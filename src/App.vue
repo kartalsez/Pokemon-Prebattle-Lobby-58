@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <UserSelection/>
-    <ShowCase @onSelectedPokemonList="onSelectedPokemonList($event)" />
+    <UserSelection :selectedPokemonList="selectedPokemonList" :totalWeight="totalWeight"/>
+    <ShowCase @onAddedPokemon="onAddedPokemon($event)" />
   </div>
 </template>
 
 <script>
-import UserSelection from './components/UserSelection.vue'
-import ShowCase from './components/ShowCase.vue'
+import UserSelection from './components/UserSelection/UserSelection.vue'
+import ShowCase from './components/ShowCase/ShowCase.vue'
 
 export default {
   name: 'App',
@@ -15,9 +15,16 @@ export default {
     UserSelection,
     ShowCase
   },
+  data() {
+    return {
+      selectedPokemonList: [],
+      totalWeight: 0
+    }
+  },
   methods: {
-    onSelectedPokemonList(selectedPokemonList) {
-      console.log('selectedPokemonList:', selectedPokemonList);
+    onAddedPokemon(event) {
+      this.selectedPokemonList = event.selectedPokemonList;
+      this.totalWeight = event.totalWeight;
     }
   }
 }
