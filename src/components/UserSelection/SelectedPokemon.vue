@@ -9,33 +9,61 @@
                 {{ ability_.ability.name }}
             </li>
         </ul>
+        <v-radar
+                :stats="mapStats(selectedPokemon.stats)"
+                :polycolor="polycolor"
+                :radar="radar"
+                :scale="scale">
+        </v-radar>
     </div>
 </template>
 
 <script>
+    import Radar from 'vue-radar'
+
     export default {
         name: 'SelectedPokemon',
         props: {
             selectedPokemon: Object
         },
+        components: {
+            'v-radar': Radar
+        },
+        methods: {
+          mapStats(stats) {
+              return stats.map(stat => {
+                  return { name: stat.stat.name, value: stat.base_stat}
+              });
+          }
+        },
+        data()  {
+            return {
+                radar: {},
+                scale: {},
+                polycolor: 'rgba(250, 100, 50, .5)'
+            }
+        }
 
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss">
     .selected-pokemon {
         width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        p, {
+        p, b {
             display: flex;
             flex-direction: column;
+            text-align: center;
+        }
+    }
 
-            span {
-                text-align: center
-            }
+    .v-radar {
+        svg {
+            width: 200px;
+            height: 200px;
         }
     }
 </style>

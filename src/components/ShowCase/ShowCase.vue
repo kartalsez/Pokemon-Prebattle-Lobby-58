@@ -33,7 +33,7 @@
                 pokemonList: [],
                 currentPage: 1,
                 rows: 100,
-                limit: 10,
+                limit: 16,
                 selectedPokemon: {},
                 selectedPokemonList: [],
                 isLoaded: false

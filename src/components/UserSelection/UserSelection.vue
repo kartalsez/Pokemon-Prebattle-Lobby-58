@@ -66,7 +66,7 @@ export default {
         border: none;
         .tabs {
           .tab-content {
-            height: 500px !important;
+            min-height: 500px !important;
             border: none !important;
           }
           .card-footer {
