@@ -23,6 +23,7 @@
 </template>
 
 <script>
+    import { mapActions } from 'vuex';
     import axios from 'axios';
     import PokemonBasicInfo from "./PokemonBasicInfo";
 
@@ -38,7 +39,6 @@
                 rows: 100,
                 limit: 16,
                 selectedPokemon: {},
-                selectedPokemonList: [],
                 isLoadedPokemonDetail: false,
                 isLoadedPokemons: false
             }
@@ -46,7 +46,18 @@
         mounted() {
             this.getPokemons(this.currentPage, this.limit);
         },
+        computed: {
+            pokemonListInStore () {
+                return this.$store.state.pokemonList
+            },
+            totalWeightInStore() {
+                return this.$store.state.totalWeight
+            }
+        },
         methods: {
+            ...mapActions([
+                'addPokemon'
+            ]),
             showToast(message, title, variant, append = false) {
                 this.$bvToast.toast(message, {
                     title: title,
@@ -73,16 +84,10 @@
             },
             isTotalWeightExceeded() {
                 if (this.selectedPokemon.weight <= 500) {
-                    return this.computeTotatlWeight(this.selectedPokemonList) + this.selectedPokemon.weight > 500;
+                    return this.totalWeightInStore + this.selectedPokemon.weight > 500;
                 } else {
                     return true;
                 }
-            },
-            computeTotatlWeight(list) {
-                const reducer = (accumulator, item) => {
-                    return accumulator + item.weight;
-                };
-                return list.reduce(reducer, 0);
             },
             onChangePagination(pageNumber) {
                 this.getPokemons(pageNumber, this.limit);
@@ -91,12 +96,12 @@
                 this.getPokemonDetail(pokemonUrl);
             },
             onClickOK() {
-                if (this.selectedPokemonList.length === 3) {
+                if (this.pokemonListInStore.length === 3) {
                     this.showToast('You could select maximum of three!', 'Maximum Warning', 'warning');
                     return;
                 }
 
-                if (this.selectedPokemonList.find(item => item.id === this.selectedPokemon.id)) {
+                if (this.pokemonListInStore.find(item => item.id === this.selectedPokemon.id)) {
                     this.showToast("You couldn't select same Pokémon!", 'Same Pokémon Warning', 'warning');
                     return;
                 }
@@ -106,10 +111,7 @@
                     return;
                 }
 
-                this.selectedPokemonList.push(this.selectedPokemon);
-
-                this.$emit('onAddedPokemon',
-                    {selectedPokemonList: this.selectedPokemonList, totalWeight: this.computeTotatlWeight(this.selectedPokemonList)});
+                this.$store.dispatch('addPokemon', this.selectedPokemon);
 
                 this.showToast("The selected Pokémon added.", 'Pokémon Added', 'success');
             }
