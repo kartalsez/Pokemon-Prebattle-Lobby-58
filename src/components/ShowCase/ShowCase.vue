@@ -5,7 +5,10 @@
                 <h2>Showcase</h2>
             </header>
             <section>
-                <button v-for="pokemon_ in pokemonList" :key="pokemon_.url" @click="onClickPokemon(pokemon_.url)" v-b-modal.modal-pokemon-info> {{ pokemon_.name }}</button>
+                <div v-if="!isLoadedPokemons" class="text-center"><b-spinner variant="primary" label="Spinning"></b-spinner></div>
+                <template v-if="isLoadedPokemons" >
+                    <button v-for="pokemon_ in pokemonList" :key="pokemon_.url" @click="onClickPokemon(pokemon_.url)" v-b-modal.modal-pokemon-info> {{ pokemon_.name }}</button>
+                </template>
             </section>
         </main>
         <footer>
@@ -13,7 +16,7 @@
         </footer>
 
         <b-modal id="modal-pokemon-info" title="Pokemon Basic Info" @ok="onClickOK()" :ok-title="'Add Pokémon'">
-            <PokemonBasicInfo  :isLoaded="isLoaded" :selectedPokemon="selectedPokemon"></PokemonBasicInfo>
+            <PokemonBasicInfo  :isLoaded="isLoadedPokemonDetail" :selectedPokemon="selectedPokemon"></PokemonBasicInfo>
         </b-modal>
 
     </div>
@@ -36,7 +39,8 @@
                 limit: 16,
                 selectedPokemon: {},
                 selectedPokemonList: [],
-                isLoaded: false
+                isLoadedPokemonDetail: false,
+                isLoadedPokemons: false
             }
         },
         mounted() {
@@ -53,16 +57,18 @@
                 })
             },
             getPokemons(pageNumber, limit) {
+                this.isLoadedPokemons = false;
                 axios.get(`https://pokeapi.co/api/v2/pokemon?offset=${pageNumber}&limit=${limit}`).then(response => {
                     this.pokemonList = response.data.results;
+                    this.isLoadedPokemons = true;
                 })
             },
             getPokemonDetail(pokemonUrl) {
                 this.selectedPokemon = {};
-                this.isLoaded = false;
+                this.isLoadedPokemonDetail = false;
                 axios.get(pokemonUrl).then(response => {
                     this.selectedPokemon = response.data;
-                    this.isLoaded = true;
+                    this.isLoadedPokemonDetail = true;
                 })
             },
             isTotalWeightExceeded() {
