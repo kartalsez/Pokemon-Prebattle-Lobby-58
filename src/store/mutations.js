@@ -12,5 +12,9 @@ export const mutations = {
     addPokemon (state, pokemon) {
         state.pokemonList.push(pokemon);
         state.totalWeight = helpers.computeTotalWeight(state.pokemonList);
+    },
+    removePokemon (state, index) {
+        state.pokemonList.splice(index, 1);
+        state.totalWeight = helpers.computeTotalWeight(state.pokemonList);
     }
 };

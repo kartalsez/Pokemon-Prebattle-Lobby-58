@@ -15,26 +15,35 @@
                 :radar="radar"
                 :scale="scale">
         </v-radar>
+        <b-button variant="outline-danger" @click="removePokemon">Remove Pokemon</b-button>
     </div>
 </template>
 
 <script>
     import Radar from 'vue-radar'
+    import { mapActions } from "vuex";
 
     export default {
         name: 'SelectedPokemon',
         props: {
-            selectedPokemon: Object
+            selectedPokemon: Object,
+            index: Number
         },
         components: {
             'v-radar': Radar
         },
         methods: {
-          mapStats(stats) {
+            ...mapActions([
+                'removePokemon'
+            ]),
+            removePokemon(){
+                this.$store.dispatch('removePokemon', this.index);
+            },
+            mapStats(stats) {
               return stats.map(stat => {
                   return { name: stat.stat.name, value: stat.base_stat}
               });
-          }
+            }
         },
         data()  {
             return {

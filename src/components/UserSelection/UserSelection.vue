@@ -8,8 +8,8 @@
 
       <b-card no-body>
         <b-tabs v-model="tabIndex"  pills card end align="center">
-          <b-tab v-bind:title="selectedPokemon_.name" v-for="selectedPokemon_ in pokemonListInStore" :key="selectedPokemon_.id">
-            <selected-pokemon :selectedPokemon="selectedPokemon_"></selected-pokemon>
+          <b-tab v-bind:title="selectedPokemon_.name" v-for="(selectedPokemon_, index) in pokemonListInStore" :key="selectedPokemon_.id">
+            <selected-pokemon :selectedPokemon="selectedPokemon_" :index="index"></selected-pokemon>
           </b-tab>
         </b-tabs>
       </b-card>
