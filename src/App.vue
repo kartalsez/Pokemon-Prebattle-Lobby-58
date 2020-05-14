@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <UserSelection :selectedPokemonList="selectedPokemonList" :totalWeight="totalWeight"/>
-    <ShowCase @onAddedPokemon="onAddedPokemon($event)" />
+    <UserSelection />
+    <ShowCase />
   </div>
 </template>
 
@@ -14,18 +14,6 @@ export default {
   components: {
     UserSelection,
     ShowCase
-  },
-  data() {
-    return {
-      selectedPokemonList: [],
-      totalWeight: 0
-    }
-  },
-  methods: {
-    onAddedPokemon(event) {
-      this.selectedPokemonList = event.selectedPokemonList;
-      this.totalWeight = event.totalWeight;
-    }
   }
 }
 </script>

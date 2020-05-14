@@ -1,15 +1,15 @@
 <template>
   <div class="user-selection">
     <header>
-      <h2>Selections ( {{ (tabIndex + 1) + '/' + selectedPokemonList.length }} )</h2>
-      <small>Total weight: {{totalWeight}}</small>
+      <h2>Selections ( {{ (tabIndex + 1) + '/' + pokemonListInStore.length }} )</h2>
+      <small>Total weight: {{totalWeightInStore}}</small>
     </header>
     <section>
 
       <b-card no-body>
         <b-tabs v-model="tabIndex"  pills card end align="center">
-          <b-tab v-bind:title="selectedPokemon_.name" v-for="selectedPokemon_ in selectedPokemonList" :key="selectedPokemon_.id">
-            <selected-pokemon :selectedPokemon="selectedPokemon_"></selected-pokemon>
+          <b-tab v-bind:title="selectedPokemon_.name" v-for="(selectedPokemon_, index) in pokemonListInStore" :key="selectedPokemon_.id">
+            <selected-pokemon :selectedPokemon="selectedPokemon_" :index="index"></selected-pokemon>
           </b-tab>
         </b-tabs>
       </b-card>
@@ -23,12 +23,16 @@ import SelectedPokemon from './SelectedPokemon.vue'
 
 export default {
   name: 'UserSelection',
-  props: {
-    selectedPokemonList: Array,
-    totalWeight: Number
-  },
   components: {
     SelectedPokemon
+  },
+  computed: {
+    pokemonListInStore () {
+      return this.$store.state.pokemonList
+    },
+    totalWeightInStore() {
+      return this.$store.state.totalWeight
+    }
   },
   data() {
     return {
